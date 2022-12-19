@@ -16,14 +16,15 @@ export function Posts() {
   // replace with useQuery
 
   //두 번째 인수는 데이터를 가져오는 비동기 함수여야 한다.
-  const { data } = useQuery("posts", fetchPosts);
-  console.log(data);
+  const { data, isError, isLoading } = useQuery("posts", fetchPosts);
+  if (isLoading) return <h3>Loading...</h3>;
+  if (isError) return <h3>Oops.. Something went wrong..</h3>;
 
   return (
     <>
       <ul>
         {/* fetchPosts 함수는 비동기이기 때문에 데이터가 들어오기 전까지는 빈 배열이다. */}
-        {data?.map((post) => (
+        {data.map((post) => (
           <li key={post.id} className="post-title" onClick={() => setSelectedPost(post)}>
             {post.title}
           </li>
