@@ -27,7 +27,7 @@ export function PostDetail({ post }) {
 
   //useMutation은 쿼리 키랑 상관없음
   const deleteMutation = useMutation((postId) => deletePost(postId));
-  console.log(deleteMutation);
+  const updateMutation = useMutation((postId) => updatePost(postId));
 
   if (isLoading) <h3>Loading...</h3>;
   if (isError)
@@ -44,7 +44,11 @@ export function PostDetail({ post }) {
       {deleteMutation.isError ? <p style={{ color: "red" }}>Error Deleting Posts</p> : null}
       {deleteMutation.isLoading ? <p style={{ color: "purple" }}>Loading Deleting Posts</p> : null}
       {deleteMutation.isSuccess ? <p style={{ color: "green" }}>Success Deleting Posts</p> : null}
-      <button>Update title</button>
+
+      <button onClick={() => updateMutation.mutate(post.id)}>Update title</button>
+      {updateMutation.isError ? <p style={{ color: "red" }}>Error Updating Posts</p> : null}
+      {updateMutation.isLoading ? <p style={{ color: "purple" }}>Loading Updating Posts</p> : null}
+      {updateMutation.isSuccess ? <p style={{ color: "green" }}>Success Updating Posts</p> : null}
       <p>{post.body}</p>
       <h4>Comments</h4>
       {data?.map((comment) => (
