@@ -24,15 +24,9 @@ export function Posts() {
     }
   }, [currentPage, queryClient]);
 
-  // Prefetch
-  // 데이터를 캐시에 추가
-  // 기본값은 stale 상태
-  // 데이터를 사용하고자 할 때 stale 상태에서 데이터를 다시 가져옴
-  // 가져오는 중에는 캐시에 있는 데이터를 이용(캐시가 만료되지 않았다는 가정 하)
-
   //두 번째 인수는 데이터를 가져오는 비동기 함수여야 한다.
   //세 번째 인수로 staleTime을 설정하면 처음에는 fresh 상태였다가 해당 시간이 지나면 stale로 바뀜
-  const { data, isError, isLoading } = useQuery(
+  const { data, isError, isLoading, error, isFetching } = useQuery(
     ["posts", currentPage],
     () => fetchPosts(currentPage),
     {
@@ -40,8 +34,14 @@ export function Posts() {
       keepPreviousData: true, //쿼리 키가 바뀔때도 이전 데이터를 유지해서, 이전 페이지로 돌아갔을 때 캐시에 해당 데이터가 있도록 설정
     }
   );
-  if (isLoading) return <h3>Loading...</h3>;
-  if (isError) return <h3>Oops.. Something went wrong..</h3>;
+  if (isFetching) return <h3>Loading...</h3>;
+  if (isError)
+    return (
+      <>
+        <h3>Oops.. Something went wrong..</h3>
+        <p>{error.toString()}</p>
+      </>
+    );
 
   return (
     <>
@@ -55,7 +55,7 @@ export function Posts() {
       </ul>
       <div className="pages">
         <button
-          disable={currentPage <= 1}
+          disabled={currentPage <= 1}
           onClick={() => {
             setCurrentPage((cur) => cur - 1);
           }}
