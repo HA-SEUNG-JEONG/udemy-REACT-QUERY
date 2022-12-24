@@ -16,7 +16,8 @@ export function Posts() {
   // replace with useQuery
 
   //두 번째 인수는 데이터를 가져오는 비동기 함수여야 한다.
-  const { data, isError, isLoading } = useQuery("posts", fetchPosts);
+  //세 번째 인수로 staleTime을 설정하면 처음에는 fresh 상태였다가 해당 시간이 지나면 stale로 바뀜
+  const { data, isError, isLoading } = useQuery("posts", fetchPosts, { staleTime: 2000 });
   if (isLoading) return <h3>Loading...</h3>;
   if (isError) return <h3>Oops.. Something went wrong..</h3>;
 
