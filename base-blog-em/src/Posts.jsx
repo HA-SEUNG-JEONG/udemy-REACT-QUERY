@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "react-query";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
 
 import { PostDetail } from "./PostDetail";
 const maxPostPage = 10;
@@ -15,7 +15,20 @@ export function Posts() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPost, setSelectedPost] = useState(null);
 
-  // replace with useQuery
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (currentPage < maxPostPage) {
+      const nextPage = currentPage + 1;
+      queryClient.prefetchQuery(["posts", nextPage], () => fetchPosts(nextPage)); //queryClient도 의존성에 포함
+    }
+  }, [currentPage, queryClient]);
+
+  // Prefetch
+  // 데이터를 캐시에 추가
+  // 기본값은 stale 상태
+  // 데이터를 사용하고자 할 때 stale 상태에서 데이터를 다시 가져옴
+  // 가져오는 중에는 캐시에 있는 데이터를 이용(캐시가 만료되지 않았다는 가정 하)
 
   //두 번째 인수는 데이터를 가져오는 비동기 함수여야 한다.
   //세 번째 인수로 staleTime을 설정하면 처음에는 fresh 상태였다가 해당 시간이 지나면 stale로 바뀜
@@ -24,6 +37,7 @@ export function Posts() {
     () => fetchPosts(currentPage),
     {
       staleTime: 2000,
+      keepPreviousData: true, //쿼리 키가 바뀔때도 이전 데이터를 유지해서, 이전 페이지로 돌아갔을 때 캐시에 해당 데이터가 있도록 설정
     }
   );
   if (isLoading) return <h3>Loading...</h3>;
