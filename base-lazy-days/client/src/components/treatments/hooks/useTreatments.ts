@@ -12,8 +12,17 @@ async function getTreatments(): Promise<Treatment[]> {
 }
 
 export function useTreatments(): Treatment[] {
-  // TODO: get data from server via useQuery
+  const toast = useCustomToast();
+
   const fallback = []; // fallback 데이터로 data에 기본값 할당
-  const { data = fallback } = useQuery(queryKeys.treatments, getTreatments);
+  const { data = fallback } = useQuery(queryKeys.treatments, getTreatments, {
+    onError: (error) => {
+      const title =
+        error instanceof Error
+          ? error.message
+          : 'Error connecting to the server';
+      toast({ title, status: 'error' });
+    },
+  });
   return data;
 }
